@@ -5,10 +5,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://www.docker.com/)
-[![GitHub release](https://img.shields.io/github/release/your-org/woometrics.svg)](https://github.com/your-org/woometrics/releases)
-[![Build Status](https://github.com/your-org/woometrics/workflows/CI/badge.svg)](https://github.com/your-org/woometrics/actions)
-[![Docker Pulls](https://img.shields.io/docker/pulls/your-org/woometrics.svg)](https://hub.docker.com/r/your-org/woometrics)
-[![Contributors](https://img.shields.io/github/contributors/your-org/woometrics.svg)](https://github.com/your-org/woometrics/graphs/contributors)
+[![GitHub release](https://img.shields.io/github/release/webxbeyond/woometrics.svg)](https://github.com/webxbeyond/woometrics/releases)
+[![Build Status](https://github.com/webxbeyond/woometrics/workflows/CI/badge.svg)](https://github.com/webxbeyond/woometrics/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/webxbeyond/woometrics.svg)](https://hub.docker.com/r/webxbeyond/woometrics)
+[![Contributors](https://img.shields.io/github/contributors/webxbeyond/woometrics.svg)](https://github.com/webxbeyond/woometrics/graphs/contributors)
 
 ## 🌟 Why WooMetrics?
 
@@ -460,8 +460,8 @@ We love contributions! Please read our [Contributing Guide](CONTRIBUTING.md) and
 
 ### Ways to Contribute
 
-- 🐛 **Report bugs** via [GitHub Issues](https://github.com/your-org/woometrics/issues)
-- ✨ **Request features** via [GitHub Discussions](https://github.com/your-org/woometrics/discussions)
+- 🐛 **Report bugs** via [GitHub Issues](https://github.com/webxbeyond/woometrics/issues)
+- ✨ **Request features** via [GitHub Discussions](https://github.com/webxbeyond/woometrics/discussions)
 - 📖 **Improve documentation**
 - 🧪 **Add tests** for better coverage
 - 🔧 **Fix bugs** and implement features
@@ -511,9 +511,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support & Community
 
-- � **Discussions**: [GitHub Discussions](https://github.com/your-org/woometrics/discussions) - Ask questions and share ideas
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/your-org/woometrics/issues) - Report bugs and request features
-- 📖 **Documentation**: [Project Wiki](https://github.com/your-org/woometrics/wiki) - Comprehensive guides and tutorials
+- � **Discussions**: [GitHub Discussions](https://github.com/webxbeyond/woometrics/discussions) - Ask questions and share ideas
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/webxbeyond/woometrics/issues) - Report bugs and request features
+- 📖 **Documentation**: [Project Wiki](https://github.com/webxbeyond/woometrics/wiki) - Comprehensive guides and tutorials
 - 🔒 **Security**: [Security Policy](SECURITY.md) - Report security vulnerabilities responsibly
 - � **Changelog**: [CHANGELOG.md](CHANGELOG.md) - See what's new in each release
 
@@ -525,8 +525,8 @@ Please read our [Code of Conduct](CODE_OF_CONDUCT.md) to understand our communit
 
 Thanks to all our amazing contributors! 🎉
 
-<a href="https://github.com/your-org/woometrics/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=your-org/woometrics" />
+<a href="https://github.com/webxbeyond/woometrics/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=webxbeyond/woometrics" />
 </a>
 
 ## ⭐ Show Your Support
@@ -539,9 +539,9 @@ If this project helped you, please consider:
 
 ## 📈 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/your-org/woometrics?style=social)
-![GitHub forks](https://img.shields.io/github/forks/your-org/woometrics?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/your-org/woometrics?style=social)
+![GitHub stars](https://img.shields.io/github/stars/webxbeyond/woometrics?style=social)
+![GitHub forks](https://img.shields.io/github/forks/webxbeyond/woometrics?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/webxbeyond/woometrics?style=social)
 
 ---
 
