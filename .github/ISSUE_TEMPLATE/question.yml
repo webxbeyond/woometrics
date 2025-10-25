@@ -1,0 +1,120 @@
+name: Question / Help
+description: Ask a question or get help with setup/configuration
+title: "[Question]: "
+labels: ["question", "help-wanted"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your question! 🤔
+        
+        Before asking, please check:
+        - [README](https://github.com/your-org/woometrics/blob/main/README.md)
+        - [Documentation](https://github.com/your-org/woometrics/tree/main/docs)
+        - [Existing Discussions](https://github.com/your-org/woometrics/discussions)
+        - [Closed Issues](https://github.com/your-org/woometrics/issues?q=is%3Aissue+is%3Aclosed)
+  
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  
+  - type: textarea
+    id: question
+    attributes:
+      label: What's your question?
+      description: Please be as specific as possible
+      placeholder: I'm trying to... but I'm getting... How do I...?
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What area is your question about?
+      options:
+        - Installation/Setup
+        - Configuration
+        - WooCommerce Integration
+        - Prometheus/Grafana
+        - Docker/Deployment
+        - Metrics/Monitoring
+        - Troubleshooting
+        - API Usage
+        - Performance
+        - Security
+        - Contributing
+        - Other
+    validations:
+      required: true
+  
+  - type: textarea
+    id: what-tried
+    attributes:
+      label: What have you tried?
+      description: What steps have you already taken to solve this?
+      placeholder: |
+        I tried...
+        I checked...
+        I looked at...
+    validations:
+      required: false
+  
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: Please provide details about your environment if relevant to your question
+      placeholder: |
+        - OS: (e.g., Ubuntu 20.04, Windows 10, macOS 12.0)
+        - Node.js version: (e.g., 18.17.0)
+        - Docker version: (if applicable)
+        - WooCommerce version: (e.g., 8.2.0)
+        - Deployment method: (Docker, Node.js, etc.)
+      value: |
+        - OS: 
+        - Node.js version: 
+        - Docker version: 
+        - WooCommerce version: 
+        - Deployment method: 
+    validations:
+      required: false
+  
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration (if relevant)
+      description: Please share relevant configuration (remove sensitive data)
+      placeholder: |
+        Environment variables, docker-compose.yml snippet, etc.
+      render: yaml
+    validations:
+      required: false
+  
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error logs (if any)
+      description: Please copy and paste any relevant error output
+      render: shell
+    validations:
+      required: false
+  
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm you've checked these resources first
+      options:
+        - label: I have read the [README](https://github.com/your-org/woometrics/blob/main/README.md)
+          required: true
+        - label: I have searched existing [issues](https://github.com/your-org/woometrics/issues) and [discussions](https://github.com/your-org/woometrics/discussions)
+          required: true
+        - label: I agree to follow this project's [Code of Conduct](https://github.com/your-org/woometrics/blob/main/CODE_OF_CONDUCT.md)
+          required: true

@@ -1,0 +1,49 @@
+{
+  "name": "woometrics",
+  "version": "1.0.0",
+  "description": "Node.js application that exports metrics from multiple WooCommerce stores to Prometheus for monitoring and alerting",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest --experimental-vm-modules"
+  },
+  "keywords": [
+    "woocommerce",
+    "prometheus",
+    "metrics",
+    "monitoring",
+    "nodejs",
+    "exporter",
+    "ecommerce",
+    "analytics",
+    "grafana",
+    "docker"
+  ],
+  "author": "WooMetrics Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/your-org/woometrics#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/woometrics.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/woometrics/issues"
+  },
+  "dependencies": {
+    "@woocommerce/woocommerce-rest-api": "^1.0.2",
+    "express": "^4.18.2",
+    "prom-client": "^15.0.0",
+    "node-cron": "^3.0.3",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

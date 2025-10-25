@@ -1,0 +1,77 @@
+name: Community Health Check
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sundays
+  workflow_dispatch:
+
+jobs:
+  community-health:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Check for stale issues
+        uses: actions/stale@v8
+        with:
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had recent activity. 
+            It will be closed if no further activity occurs. Thank you for your contributions! 🙏
+          stale-pr-message: |
+            This pull request has been automatically marked as stale because it has not had recent activity. 
+            It will be closed if no further activity occurs. Thank you for your contributions! 🙏
+          close-issue-message: |
+            This issue has been automatically closed due to inactivity. 
+            If you believe this issue is still relevant, please reopen it or create a new issue. 
+            Thank you for your understanding! 🙏
+          close-pr-message: |
+            This pull request has been automatically closed due to inactivity. 
+            If you believe this PR is still relevant, please reopen it or create a new PR. 
+            Thank you for your understanding! 🙏
+          days-before-stale: 60
+          days-before-close: 7
+          stale-issue-label: 'stale'
+          stale-pr-label: 'stale'
+          exempt-issue-labels: 'pinned,security,enhancement'
+          exempt-pr-labels: 'pinned,security'
+          
+      - name: Generate community metrics
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ github.repository }} is:issue created:>=$(date -d "30 days ago" +%Y-%m-%d)'
+          
+      - name: Welcome new contributors
+        uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            🎉 **Welcome to WooMetrics!** 
+            
+            Thank you for opening your first issue! We're excited to have you as part of our community. 
+            
+            A maintainer will review your issue soon. In the meantime, please make sure you've:
+            - [ ] Searched existing issues to avoid duplicates
+            - [ ] Provided clear reproduction steps (for bugs)
+            - [ ] Included relevant environment details
+            
+            Don't forget to:
+            - ⭐ **Star** the repository if you find it useful
+            - 📖 Check out our [documentation](https://github.com/${{ github.repository }}/tree/main/docs)
+            - 💬 Join the [discussions](https://github.com/${{ github.repository }}/discussions) for questions
+            
+            Thanks for contributing to WooMetrics! 🚀
+          pr-message: |
+            🎉 **Welcome to WooMetrics!** 
+            
+            Thank you for your first pull request! We're thrilled to have you contribute to our project.
+            
+            Please make sure you've:
+            - [ ] Read our [Contributing Guide](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md)
+            - [ ] Followed our [Code of Conduct](https://github.com/${{ github.repository }}/blob/main/CODE_OF_CONDUCT.md)
+            - [ ] Added tests for new features (if applicable)
+            - [ ] Updated documentation (if applicable)
+            
+            A maintainer will review your PR soon. Thanks for making WooMetrics better! 🛠️

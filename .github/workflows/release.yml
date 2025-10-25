@@ -1,0 +1,133 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests
+        run: npm test
+        
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Extract changelog for this version
+          if [ -f CHANGELOG.md ]; then
+            # Get changelog section for this version
+            VERSION_NO_V=$(echo "${{ steps.version.outputs.version }}" | sed 's/^v//')
+            sed -n "/## \[$VERSION_NO_V\]/,/## \[/p" CHANGELOG.md | sed '$d' > release_notes.md
+            
+            # If no specific version found, use unreleased section
+            if [ ! -s release_notes.md ]; then
+              sed -n '/## \[Unreleased\]/,/## \[/p' CHANGELOG.md | sed '$d' > release_notes.md
+            fi
+          else
+            echo "Automated release for ${{ steps.version.outputs.version }}" > release_notes.md
+          fi
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Trigger Docker build
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: release-build
+          client-payload: |
+            {
+              "version": "${{ steps.version.outputs.version }}",
+              "ref": "${{ github.ref }}"
+            }
+        
+  notify-release:
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Notify Discord (if configured)
+        if: secrets.DISCORD_WEBHOOK_URL
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\":\"🚀 **WooMetrics ${{ needs.create-release.outputs.version }} Released!**\\n\\nCheck out the latest release: https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }}\"}" \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+               
+      - name: Create discussion post
+        uses: abirismyname/create-discussion@v1.2.0
+        with:
+          title: "🚀 Release ${{ needs.create-release.outputs.version }} is now available!"
+          body: |
+            We're excited to announce the release of WooMetrics ${{ needs.create-release.outputs.version }}! 🎉
+            
+            ## What's New
+            
+            Check out the [release notes](https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }}) for detailed information about new features, improvements, and bug fixes.
+            
+            ## Installation
+            
+            ### Docker (Recommended)
+            ```bash
+            docker pull ghcr.io/${{ github.repository }}:${{ needs.create-release.outputs.version }}
+            ```
+            
+            ### npm
+            ```bash
+            npm install -g woometrics@${{ needs.create-release.outputs.version }}
+            ```
+            
+            ## Upgrade Guide
+            
+            Please check our [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for any breaking changes and migration steps.
+            
+            ## Feedback
+            
+            We'd love to hear your feedback! Please share your experience, report any issues, or suggest improvements.
+            
+            Happy monitoring! 📊
+          category-slug: "announcements"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
