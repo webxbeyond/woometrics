@@ -128,6 +128,62 @@ class MetricsCollector {
       registers: [this.register]
     });
 
+    // Completed orders
+    this.completedOrdersGauge = new client.Gauge({
+      name: 'woocommerce_completed_orders',
+      help: 'Number of completed orders',
+      labelNames: ['store_id', 'store_name'],
+      registers: [this.register]
+    });
+
+    // Cancelled orders
+    this.cancelledOrdersGauge = new client.Gauge({
+      name: 'woocommerce_cancelled_orders',
+      help: 'Number of cancelled orders',
+      labelNames: ['store_id', 'store_name'],
+      registers: [this.register]
+    });
+
+    // Refunded orders
+    this.refundedOrdersGauge = new client.Gauge({
+      name: 'woocommerce_refunded_orders',
+      help: 'Number of refunded orders',
+      labelNames: ['store_id', 'store_name'],
+      registers: [this.register]
+    });
+
+    // On-hold orders
+    this.onHoldOrdersGauge = new client.Gauge({
+      name: 'woocommerce_on_hold_orders',
+      help: 'Number of orders on hold',
+      labelNames: ['store_id', 'store_name'],
+      registers: [this.register]
+    });
+
+    // Order processing time (average time from pending to completed)
+    this.orderProcessingTimeGauge = new client.Gauge({
+      name: 'woocommerce_order_processing_time_hours',
+      help: 'Average order processing time in hours',
+      labelNames: ['store_id', 'store_name'],
+      registers: [this.register]
+    });
+
+    // Orders requiring attention (pending, on-hold, processing)
+    this.ordersRequiringAttentionGauge = new client.Gauge({
+      name: 'woocommerce_orders_requiring_attention',
+      help: 'Number of orders requiring attention',
+      labelNames: ['store_id', 'store_name', 'reason'],
+      registers: [this.register]
+    });
+
+    // Order status distribution
+    this.orderStatusDistributionGauge = new client.Gauge({
+      name: 'woocommerce_order_status_distribution',
+      help: 'Distribution of orders by status (percentage)',
+      labelNames: ['store_id', 'store_name', 'status'],
+      registers: [this.register]
+    });
+
     // Top products sold
     this.topProductsSoldGauge = new client.Gauge({
       name: 'woocommerce_top_products_sold',
@@ -231,7 +287,7 @@ class MetricsCollector {
 
       // Get all orders (limit to recent ones for performance)
       const orders = await wooClient.getAllOrders({
-        after: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() // Last 90 days
+        // after: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() // Last 90 days
       });
 
       // Track API response time
@@ -251,6 +307,7 @@ class MetricsCollector {
       let revenueThisMonth = 0;
       let totalOrderValue = 0;
       const productSales = {};
+      const processingTimes = []; // Store processing times for completed orders
 
       // Process each order
       orders.forEach(order => {
@@ -274,6 +331,15 @@ class MetricsCollector {
 
           if (orderMonth === thisMonth) {
             revenueThisMonth += orderTotal;
+          }
+
+          // Calculate processing time for completed orders
+          const dateCreated = new Date(order.date_created);
+          const dateCompleted = order.date_completed ? new Date(order.date_completed) : new Date();
+          
+          if (order.date_completed && dateCompleted > dateCreated) {
+            const processingTimeHours = (dateCompleted - dateCreated) / (1000 * 60 * 60);
+            processingTimes.push(processingTimeHours);
           }
         }
 
@@ -325,6 +391,64 @@ class MetricsCollector {
         statusCounts['processing'] || 0
       );
 
+      this.completedOrdersGauge.set(
+        { store_id: storeId, store_name: storeName },
+        statusCounts['completed'] || 0
+      );
+
+      this.cancelledOrdersGauge.set(
+        { store_id: storeId, store_name: storeName },
+        statusCounts['cancelled'] || 0
+      );
+
+      this.refundedOrdersGauge.set(
+        { store_id: storeId, store_name: storeName },
+        statusCounts['refunded'] || 0
+      );
+
+      this.onHoldOrdersGauge.set(
+        { store_id: storeId, store_name: storeName },
+        statusCounts['on-hold'] || 0
+      );
+
+      // Calculate orders requiring attention
+      const pendingCount = statusCounts['pending'] || 0;
+      const onHoldCount = statusCounts['on-hold'] || 0;
+      const processingCount = statusCounts['processing'] || 0;
+      const failedCount = statusCounts['failed'] || 0;
+
+      this.ordersRequiringAttentionGauge.set(
+        { store_id: storeId, store_name: storeName, reason: 'pending_payment' },
+        pendingCount
+      );
+
+      this.ordersRequiringAttentionGauge.set(
+        { store_id: storeId, store_name: storeName, reason: 'on_hold' },
+        onHoldCount
+      );
+
+      this.ordersRequiringAttentionGauge.set(
+        { store_id: storeId, store_name: storeName, reason: 'processing' },
+        processingCount
+      );
+
+      this.ordersRequiringAttentionGauge.set(
+        { store_id: storeId, store_name: storeName, reason: 'failed' },
+        failedCount
+      );
+
+      // Calculate order status distribution (percentages)
+      const totalOrders = orders.length;
+      if (totalOrders > 0) {
+        Object.entries(statusCounts).forEach(([status, count]) => {
+          const percentage = (count / totalOrders) * 100;
+          this.orderStatusDistributionGauge.set(
+            { store_id: storeId, store_name: storeName, status },
+            percentage
+          );
+        });
+      }
+
       // Set revenue metrics
       this.totalRevenueGauge.set(
         { store_id: storeId, store_name: storeName, currency, period: 'all_time' },
@@ -350,6 +474,18 @@ class MetricsCollector {
         avgOrderValue
       );
 
+      // Calculate average order processing time
+      let avgProcessingTime = 0;
+      if (processingTimes.length > 0) {
+        const totalProcessingTime = processingTimes.reduce((sum, time) => sum + time, 0);
+        avgProcessingTime = totalProcessingTime / processingTimes.length;
+      }
+
+      this.orderProcessingTimeGauge.set(
+        { store_id: storeId, store_name: storeName },
+        avgProcessingTime
+      );
+
       // Set top products metrics (top 10)
       const topProducts = Object.entries(productSales)
         .sort(([,a], [,b]) => b.quantity - a.quantity)
@@ -362,7 +498,7 @@ class MetricsCollector {
         );
       });
 
-      logger.debug(`Order metrics collected for store ${storeId}: ${orders.length} orders, $${totalRevenue.toFixed(2)} revenue`);
+      logger.debug(`Order metrics collected for store ${storeId}: ${orders.length} orders, $${totalRevenue.toFixed(2)} revenue, avg processing time: ${avgProcessingTime.toFixed(1)}h`);
 
     } catch (error) {
       logger.error(`Error collecting order metrics for store ${storeId}:`, error.message);

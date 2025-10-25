@@ -192,7 +192,7 @@ class WooCommercePrometheusExporter {
           collect_store: 'POST /collect/:storeId',
           test_connection: 'POST /test/:storeId'
         },
-        documentation: 'https://github.com/webxbeyond/woocommerce-prometheus-exporter'
+        documentation: 'https://github.com/webxbeyond/woometrics'
       });
     });
   }

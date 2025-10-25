@@ -42,6 +42,7 @@ class WooCommerceClient {
       logger.debug(`Fetching orders for store ${this.storeId}`, { params: defaultParams });
       
       const response = await this.api.get('orders', defaultParams);
+
       
       logger.debug(`Retrieved ${response.data.length} orders for store ${this.storeId}`);
       return response.data;
